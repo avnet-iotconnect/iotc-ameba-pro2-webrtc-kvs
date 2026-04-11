@@ -85,6 +85,22 @@ typedef enum SignalingControllerConnectionState
 typedef void ( * SignalingControllerConnectionStateCallback_t )( SignalingControllerConnectionState_t state,
                                                                  void * pUserData );
 
+/**
+ * @brief Credential refresh callback type.
+ *
+ * When registered in the signaling controller context, this function is called
+ * whenever AWS credentials are absent or about to expire. The implementation
+ * should fetch fresh temporary credentials and write them into the supplied
+ * buffers, then set the actual lengths and expiration epoch.
+ *
+ * @return 0 on success, non-zero on failure.
+ */
+typedef int ( *CredentialRefreshFn_t )(
+    char     *pAccessKeyId,      size_t maxAccessKeyIdLen,     size_t *pAccessKeyIdLen,
+    char     *pSecretAccessKey,  size_t maxSecretAccessKeyLen, size_t *pSecretAccessKeyLen,
+    char     *pSessionToken,     size_t maxSessionTokenLen,    size_t *pSessionTokenLen,
+    uint64_t *pExpirationSeconds );
+
 typedef struct SignalingControllerEventContentSend
 {
     char remoteClientId[ SIGNALING_CONTROLLER_REMOTE_ID_MAX_LENGTH ];
@@ -243,6 +259,12 @@ typedef struct SignalingControllerContext
 
     /* Configurations. */
     uint8_t enableStorageSession;
+
+    /* Optional callback for refreshing AWS credentials.
+     * Set this to IoTConnect_KvsCredentialRefreshCallback (or any compatible
+     * function) to enable automatic credential refresh via IoTConnect instead
+     * of the built-in AWS IoT Core role-alias mechanism. */
+    CredentialRefreshFn_t credentialRefreshFn;
 } SignalingControllerContext_t;
 
 
@@ -281,6 +303,11 @@ typedef struct SignalingControllerConnectInfo
     uint8_t enableStorageSession;
     char *pClientId;
     size_t clientIdLength;
+
+    /* Optional IoTConnect credential refresh callback.
+     * Set to IoTConnect_KvsCredentialRefreshCallback to enable dynamic
+     * credential fetching via IoTConnect instead of static keys or IoT Core. */
+    CredentialRefreshFn_t credentialRefreshFn;
 } SignalingControllerConnectInfo_t;
 
 SignalingControllerResult_t SignalingController_Init( SignalingControllerContext_t * pCtx,

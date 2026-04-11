@@ -20,6 +20,8 @@ include(../config.cmake)
 
 include(../sensor_iq.cmake)
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../iotconnect.cmake)
+
 if(BUILD_TZ)
 include(./application_s.cmake)
 endif()

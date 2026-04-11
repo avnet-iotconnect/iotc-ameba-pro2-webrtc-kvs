@@ -1,17 +1,8 @@
 /*
  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
+ * 
+ * MODIFIED: IoTConnect integration added
  */
 
 #include <stdio.h>
@@ -22,16 +13,19 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "sys_api.h"      /* sys_backtrace_enable() */
-#include "sntp/sntp.h"    /* SNTP series APIs */
-#include "wifi_conf.h"    /* WiFi series APIs */
-#include "lwip_netconf.h" /* LwIP_GetIP() */
+#include "sys_api.h"
+#include "sntp/sntp.h"
+#include "wifi_conf.h"
+#include "lwip_netconf.h"
 #include "srtp.h"
 
 #include "demo_config.h"
 #include "app_common.h"
 #include "app_media_source.h"
 #include "logging.h"
+
+// IOTCONNECT: Add header
+#include "iotconnect/iotconnect.h"
 
 AppContext_t appContext;
 AppMediaSourcesContext_t appMediaSourceContext;
@@ -116,7 +110,6 @@ static int32_t OnMediaSinkHook( void * pCustom,
             }
             else
             {
-                /* Unknown kind, skip that. */
                 LogWarn( ( "Unknown track kind: %d", pFrame->trackKind ) );
                 break;
             }
@@ -179,24 +172,45 @@ static void Master_Task( void * pParameter )
 
     if( ret == 0 )
     {
-        /* Configure signaling controller with client ID and role type. */
         memcpy( &( appContext.signalingControllerClientId[ 0 ] ), SIGNALING_CONTROLLER_MASTER_CLIENT_ID, SIGNALING_CONTROLLER_MASTER_CLIENT_ID_LENGTH );
         appContext.signalingControllerClientId[ SIGNALING_CONTROLLER_MASTER_CLIENT_ID_LENGTH ] = '\0';
         appContext.signalingControllerClientIdLength = SIGNALING_CONTROLLER_MASTER_CLIENT_ID_LENGTH;
         appContext.signalingControllerRole = SIGNALING_ROLE_MASTER;
     }
 
+    // IOTCONNECT: Initialize and start
     if( ret == 0 )
     {
-        /* Launch application with current thread serving as Signaling Controller. */
+        LogInfo( ( "Initializing IoTConnect..." ) );
+        ret = IoTConnect_Init();
+        if( ret != 0 )
+        {
+            LogError( ( "IoTConnect init failed: %ld", (long)ret ) );
+        }
+    }
+
+    if( ret == 0 )
+    {
+        ret = IoTConnect_Start();
+        if( ret != 0 )
+        {
+            LogError( ( "IoTConnect start failed: %ld", (long)ret ) );
+        }
+    }
+
+    if( ret == 0 )
+    {
         ret = AppCommon_StartSignalingController( &appContext );
     }
 
     if( ret == 0 )
     {
-        /* Launch application with current thread serving as Signaling Controller. */
         AppCommon_WaitSignalingControllerStop( &appContext );
     }
+
+    // IOTCONNECT: Cleanup
+    IoTConnect_Stop();
+    IoTConnect_Deinit();
 
     for( ;; )
     {

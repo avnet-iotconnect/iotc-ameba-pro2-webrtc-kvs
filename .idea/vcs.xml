@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/ambpro2_sdk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/components/amazon-kinesis-video-streams-dcep" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/components/amazon-kinesis-video-streams-ice" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/components/amazon-kinesis-video-streams-rtcp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/components/amazon-kinesis-video-streams-rtp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/components/amazon-kinesis-video-streams-sdp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/components/amazon-kinesis-video-streams-signaling" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/components/amazon-kinesis-video-streams-stun" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/coreHTTP" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/coreHTTP/source/dependency/3rdparty/llhttp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/coreJSON" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/crypto/SigV4-for-AWS-IoT-embedded-sdk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/libsrtp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/usrsctp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/wslay" vcs="Git" />
+  </component>
+</project>

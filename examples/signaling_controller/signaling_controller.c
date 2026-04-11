@@ -346,9 +346,14 @@ static uint8_t AreCredentialsExpired( SignalingControllerContext_t * pCtx )
     uint8_t credentialsExpired = 0U;
     uint64_t currentTimeSeconds = NetworkingUtils_GetCurrentTimeSec( NULL );
 
-    if( ( pCtx->iotThingNameLength > 0 ) &&
-        ( pCtx->roleAliasLength > 0 ) &&
-        ( pCtx->iotCredentialsEndpointLength ) )
+    /* Credentials need refreshing if either the IoT Core role-alias config is
+     * present OR an external refresh callback (e.g. IoTConnect) is registered. */
+    uint8_t hasIotCoreConfig   = ( ( pCtx->iotThingNameLength > 0U ) &&
+                                    ( pCtx->roleAliasLength > 0U ) &&
+                                    ( pCtx->iotCredentialsEndpointLength > 0U ) ) ? 1U : 0U;
+    uint8_t hasRefreshCallback = ( pCtx->credentialRefreshFn != NULL ) ? 1U : 0U;
+
+    if( hasIotCoreConfig || hasRefreshCallback )
     {
         if( ( pCtx->expirationSeconds == 0 ) ||
             ( currentTimeSeconds >= pCtx->expirationSeconds - SIGNALING_CONTROLLER_FETCH_CREDS_GRACE_PERIOD_SEC ) )
@@ -503,6 +508,32 @@ static SignalingControllerResult_t FetchTemporaryCredentials( SignalingControlle
     {
         LogError( ( "Invalid input, pCtx: 0x%p", pCtx ) );
         ret = SIGNALING_CONTROLLER_RESULT_BAD_PARAM;
+    }
+
+    /* If an external credential refresh callback is registered (e.g. IoTConnect),
+     * use it in preference to the built-in AWS IoT Core role-alias mechanism. */
+    if( ( ret == SIGNALING_CONTROLLER_RESULT_OK ) && ( pCtx->credentialRefreshFn != NULL ) )
+    {
+        int cbRet = pCtx->credentialRefreshFn(
+            pCtx->accessKeyId,     ACCESS_KEY_MAX_LEN,    &pCtx->accessKeyIdLength,
+            pCtx->secretAccessKey, SECRET_ACCESS_KEY_MAX_LEN, &pCtx->secretAccessKeyLength,
+            pCtx->sessionToken,    SESSION_TOKEN_MAX_LEN, &pCtx->sessionTokenLength,
+            &pCtx->expirationSeconds );
+
+        if( cbRet != 0 )
+        {
+            LogError( ( "Credential refresh callback failed: %d", cbRet ) );
+            ret = SIGNALING_CONTROLLER_RESULT_FAIL;
+        }
+        else
+        {
+            pCtx->accessKeyId    [ pCtx->accessKeyIdLength ]     = '\0';
+            pCtx->secretAccessKey[ pCtx->secretAccessKeyLength ] = '\0';
+            pCtx->sessionToken   [ pCtx->sessionTokenLength ]    = '\0';
+            LogInfo( ( "Credentials refreshed via callback." ) );
+        }
+
+        return ret;
     }
 
     if( ret == SIGNALING_CONTROLLER_RESULT_OK )
@@ -1360,6 +1391,8 @@ SignalingControllerResult_t SignalingController_ConnectServers( SignalingControl
     pCtx->pMessageReceivedCallbackData = pConnectInfo->pMessageReceivedCallbackData;
 
     pCtx->expirationSeconds = pConnectInfo->awsCreds.expirationSeconds;
+
+    pCtx->credentialRefreshFn = pConnectInfo->credentialRefreshFn;
 
     pCtx->enableStorageSession = pConnectInfo->enableStorageSession;
 

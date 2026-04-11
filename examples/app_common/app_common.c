@@ -31,6 +31,9 @@
 #include "demo_config.h"
 #include "logging.h"
 #include "app_common.h"
+#include "iotconnect/iotconnect.h"
+#include "iotconnect/iotconnect_config.h"
+#include "iotconnect/iotconnect_discovery.h"
 #include "networking_utils.h"
 #include "string_utils.h"
 #if METRIC_PRINT_ENABLED
@@ -212,13 +215,13 @@ static void SignalingController_Task( void * pParameter )
         connectInfo.enableStorageSession = 1;
         #endif
 
-        connectInfo.awsConfig.pRegion = AWS_REGION;
-        connectInfo.awsConfig.regionLen = strlen( AWS_REGION );
+        connectInfo.awsConfig.pRegion = IoTConnect_GetDiscoveredAwsRegion();
+        connectInfo.awsConfig.regionLen = strlen( IoTConnect_GetDiscoveredAwsRegion() );
         connectInfo.awsConfig.pService = "kinesisvideo";
         connectInfo.awsConfig.serviceLen = strlen( "kinesisvideo" );
 
-        connectInfo.channelName.pChannelName = AWS_KVS_CHANNEL_NAME;
-        connectInfo.channelName.channelNameLength = strlen( AWS_KVS_CHANNEL_NAME );
+        connectInfo.channelName.pChannelName = IOTCONNECT_DUID;
+        connectInfo.channelName.channelNameLength = strlen( IOTCONNECT_DUID );
 
         connectInfo.pUserAgentName = AWS_KVS_AGENT_NAME;
         connectInfo.userAgentNameLength = strlen( AWS_KVS_AGENT_NAME );
@@ -230,25 +233,11 @@ static void SignalingController_Task( void * pParameter )
         connectInfo.pClientId = pAppContext->signalingControllerClientId;
         connectInfo.clientIdLength = pAppContext->signalingControllerClientIdLength;
 
-        #if defined( AWS_ACCESS_KEY_ID )
-            connectInfo.awsCreds.pAccessKeyId = AWS_ACCESS_KEY_ID;
-            connectInfo.awsCreds.accessKeyIdLength = strlen( AWS_ACCESS_KEY_ID );
-            connectInfo.awsCreds.pSecretAccessKey = AWS_SECRET_ACCESS_KEY;
-            connectInfo.awsCreds.secretAccessKeyLength = strlen( AWS_SECRET_ACCESS_KEY );
-        #if defined( AWS_SESSION_TOKEN )
-            connectInfo.awsCreds.pSessionToken = AWS_SESSION_TOKEN;
-            connectInfo.awsCreds.sessionTokenLength = strlen( AWS_SESSION_TOKEN );
-        #endif     /* #if defined( AWS_SESSION_TOKEN ) */
-        #endif /* #if defined( AWS_ACCESS_KEY_ID ) */
-
-        #if defined( AWS_IOT_THING_ROLE_ALIAS )
-            connectInfo.awsIotCreds.pIotCredentialsEndpoint = AWS_CREDENTIALS_ENDPOINT;
-            connectInfo.awsIotCreds.iotCredentialsEndpointLength = strlen( AWS_CREDENTIALS_ENDPOINT );
-            connectInfo.awsIotCreds.pIotThingName = AWS_IOT_THING_NAME;
-            connectInfo.awsIotCreds.iotThingNameLength = strlen( AWS_IOT_THING_NAME );
-            connectInfo.awsIotCreds.pRoleAlias = AWS_IOT_THING_ROLE_ALIAS;
-            connectInfo.awsIotCreds.roleAliasLength = strlen( AWS_IOT_THING_ROLE_ALIAS );
-        #endif /* #if defined( AWS_IOT_THING_ROLE_ALIAS ) */
+        /* Use IoTConnect for dynamic credential refresh.
+         * The signaling controller will call this callback whenever credentials
+         * are absent or about to expire, fetching fresh temporary AWS credentials
+         * from the IoTConnect credential endpoint (IOTCONNECT_KVS_CREDENTIALS_URL). */
+        connectInfo.credentialRefreshFn = IoTConnect_KvsCredentialRefreshCallback;
 
         if( ret == 0 )
         {
@@ -598,7 +587,8 @@ static int32_t GetIceServerList( AppContext_t * pAppContext,
     if( skipProcess == 0 )
     {
         /* Put the default STUN server into index 0. */
-        if( strstr( AWS_REGION,
+        const char *pAwsRegion = IoTConnect_GetDiscoveredAwsRegion();
+        if( strstr( pAwsRegion,
                     "cn-" ) )
         {
             pStunUrlPostfix = AWS_DEFAULT_STUN_SERVER_URL_POSTFIX_CN;
@@ -612,7 +602,7 @@ static int32_t GetIceServerList( AppContext_t * pAppContext,
         written = snprintf( pOutputIceServers[ currentIceServerIndex ].url,
                             ICE_CONTROLLER_ICE_SERVER_URL_MAX_LENGTH,
                             AWS_DEFAULT_STUN_SERVER_URL,
-                            AWS_REGION,
+                            pAwsRegion,
                             pStunUrlPostfix );
 
         if( written < 0 )
