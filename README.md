@@ -119,7 +119,7 @@ Follow these steps to onboard your device into /IOTCONNECT via the online user i
 ## Clone This Repository to Your Host PC
 
 ```sh
-git clone <this-repo-url>
+git clone https://github.com/avnet-iotconnect/freertos-webrtc-reference-on-amebapro-for-amazon-kinesis-video-streams.git
 cd iotc-ameba-pro2-webrtc-kvs
 git submodule update --init --recursive
 ```
