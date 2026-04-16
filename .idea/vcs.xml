@@ -14,6 +14,7 @@
     <mapping directory="$PROJECT_DIR$/libraries/coreHTTP/source/dependency/3rdparty/llhttp" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libraries/coreJSON" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libraries/crypto/SigV4-for-AWS-IoT-embedded-sdk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/iotc-c-lib" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libraries/libsrtp" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libraries/usrsctp" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libraries/wslay" vcs="Git" />

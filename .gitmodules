@@ -40,3 +40,6 @@
 [submodule "libraries/components/amazon-kinesis-video-streams-dcep"]
 	path = libraries/components/amazon-kinesis-video-streams-dcep
 	url = https://github.com/awslabs/amazon-kinesis-video-streams-dcep.git
+[submodule "libraries/iotc-c-lib"]
+	path = libraries/iotc-c-lib
+	url = https://github.com/avnet-iotconnect/iotc-c-lib.git
