@@ -4,7 +4,7 @@ This guide walks users through setting up the WebRTC KVS master demo for the
 Realtek RTL8735B (Ameba Pro 2 Mini) that connects through **/IOTCONNECT** for 
 device management, MQTT telemetry, and automatic AWS credential delivery.
 
-![Board Image](docs/images/board.jpg)
+<img src="docs/images/board.jpg" width="25%">
 
 ---
 
