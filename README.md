@@ -296,16 +296,6 @@ ATWC
 ```
 Credentials are stored in flash and used on every subsequent boot.
 
-### Normal boot sequence
-
-After reset the device will:
-1. Connect to WiFi.
-2. Run the IoTConnect discovery flow (HTTPS to `discovery.iotconnect.io`) to
-   obtain the MQTT host and a KVS credential endpoint URL.
-3. Connect to AWS IoT Core MQTT.
-4. Fetch temporary AWS credentials from the KVS credential endpoint.
-5. Start the KVS WebRTC master and wait for a viewer to connect.
-
 ---
 ## Control and View Stream via /IOTCONNECT
 
