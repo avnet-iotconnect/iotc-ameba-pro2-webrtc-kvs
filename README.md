@@ -4,7 +4,7 @@ This guide walks users through setting up the WebRTC KVS master demo for the
 Realtek RTL8735B (Ameba Pro 2 Mini) that connects through **/IOTCONNECT** for 
 device management, MQTT telemetry, and automatic AWS credential delivery.
 
-<img src="docs/images/board.jpg" width="25%">
+<img src="docs/images/ameba-product.png" width="25%">
 
 ---
 
@@ -230,11 +230,23 @@ The flash tool is bundled in the repository at:
 libraries/ambpro2_sdk/tools/Pro2_PG_tool _v1.4.3/
 ```
 
+<img src="docs/images/ameba-labels.png" width="35%">
+
+**(1) Micro-USB port — (2) Reset button — (3) Program button**
+
+### Connect the board to your PC
+
+1. Connect a micro-USB cable from your PC to the **micro-USB port (1)** on the board.
+
+> [!NOTE]
+> Use a micro-USB cable that supports **data transfer**. Many micro-USB cables are charge-only and contain no data wires — the board will not be detected by your PC if you use one of these.
+
 ### Enter program mode on the board
-1. Press and hold **Reset**.
-2. Press and hold **Program** while keeping Reset held.
-3. Release **Reset**.
-4. Release **Program**.
+
+2. Press and hold the **Reset button (2)**.
+3. While keeping Reset held, press and hold the **Program button (3)**.
+4. Release **Reset (2)**.
+5. Release **Program (3)**.
 
 ### Flash the binary
 
