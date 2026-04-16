@@ -128,22 +128,39 @@ git submodule update --init --recursive
 
 ## /IOTCONNECT Firmware Configuration
 
-A single script handles all device configuration.  Run it from the repository
-root (where you should already be):
+A single script handles all device configuration — credentials and video codec selection.
+Run it from the repository root (where you should already be).
 
+### Choose your video codec
+
+| | H.264 | H.265 (HEVC) |
+|---|---|---|
+| **Bandwidth** | ~1.4 Mbps | ~462 Kbps (~67% less) |
+| **Compatibility** | All WebRTC-capable browsers and viewers | Requires an H.265-capable viewer |
+| **Best for** | Maximum compatibility | Bandwidth-constrained networks |
+
+**H.264** (default — recommended for most users):
 ```sh
-./iotc_config.sh
+./iotc_config.sh -codec h.264
+```
+
+**H.265 (HEVC)** — significantly lower bandwidth at equivalent quality:
+```sh
+./iotc_config.sh -codec h.265
 ```
 
 > [!TIP]
 > **Windows users:** Open **Git Bash** (installed with [Git for Windows](https://git-scm.com/download/win)) and run the command above from inside it.
 > PowerShell and Command Prompt will not work.
 
->[!NOTE]
+> [!NOTE]
 > This script automatically searches your local Downloads folder for the most recently-downloaded `iotcDeviceConfig.json` file to determine
 > the /IOTCONNECT config data, and then searches for the zipped certificate package that has the same device unique ID name as the one found
 > in the `iotcDeviceConfig.json` file. If you have downloaded multiple `iotcDeviceConfig.json` files to your Downloads directory, they will be
 > numbered by your file system and the script will select the file with the highest number to ensure it is the newest, correct file.
+
+> [!NOTE]
+> If you have already built the firmware and want to switch codecs, run `./build.sh clean` before rebuilding so that CMake picks up the new codec selection.
 
 ---
 

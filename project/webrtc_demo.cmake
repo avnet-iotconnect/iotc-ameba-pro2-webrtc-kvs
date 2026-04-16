@@ -176,6 +176,14 @@ else()
      )
 endif()
 
+# ── Codec selection (set by iotc_config.sh — do not edit manually) ────────
+# Run: ./iotc_config.sh -codec h.264   (default, widest compatibility)
+# Run: ./iotc_config.sh -codec h.265   (lower bandwidth, requires H.265 viewer)
+set( IOTC_VIDEO_CODEC "h264" )
+if( IOTC_VIDEO_CODEC STREQUAL "h265" )
+     list( APPEND app_flags USE_VIDEO_CODEC_H265=1 )
+endif()
+
 # Set more strict rules to application code only
 set_source_files_properties(
      ${WEBRTC_APPLICATION_SOURCE_FILES}
