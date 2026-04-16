@@ -176,6 +176,20 @@ else()
      )
 endif()
 
+option( ENABLE_TWCC_SUPPORT "Enable Transport Wide Congestion Control bandwidth estimation" ON )
+
+if(ENABLE_TWCC_SUPPORT)
+     list(
+          APPEND app_flags
+          ENABLE_TWCC_SUPPORT=1
+     )
+else()
+     list(
+          APPEND app_flags
+          ENABLE_TWCC_SUPPORT=0
+     )
+endif()
+
 # ── Codec selection (set by iotc_config.sh — do not edit manually) ────────
 # Run: ./iotc_config.sh -codec h.264   (default, widest compatibility)
 # Run: ./iotc_config.sh -codec h.265   (lower bandwidth, requires H.265 viewer)
