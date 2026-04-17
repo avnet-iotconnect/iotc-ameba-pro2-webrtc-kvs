@@ -207,6 +207,8 @@ endif()
 set( IOTC_VIDEO_CODEC "h264" )
 if( IOTC_VIDEO_CODEC STREQUAL "h265" )
      list( APPEND app_flags USE_VIDEO_CODEC_H265=1 )
+else()
+     list( APPEND app_flags USE_VIDEO_CODEC_H265=0 )
 endif()
 
 # Set more strict rules to application code only
