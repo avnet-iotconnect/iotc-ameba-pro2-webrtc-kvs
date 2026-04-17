@@ -214,10 +214,7 @@ cd <PATH_TO_REPO>
 ./build.sh
 ```
 
-The script configures CMake on the first run and builds the firmware. The output binary is:
-```
-project/realtek_amebapro2_webrtc_application/GCC-RELEASE/build/flash_ntz.bin
-```
+The script configures CMake on the first run and builds the firmware. The output binary is `project/realtek_amebapro2_webrtc_application/GCC-RELEASE/build/flash_ntz.bin`
 
 **Windows:** The build must be run from the MinGW/MSYS2 shell that is bundled with the Realtek SDK — do **not** use PowerShell or Command Prompt. See the [Windows build instructions](project/realtek_amebapro2_webrtc_application/GCC-RELEASE/Readme.md) for step-by-step guidance on opening the correct shell and running the build.
 
@@ -225,10 +222,7 @@ project/realtek_amebapro2_webrtc_application/GCC-RELEASE/build/flash_ntz.bin
 
 ## Flash
 
-The flash tool is bundled in the repository at:
-```
-libraries/ambpro2_sdk/tools/Pro2_PG_tool _v1.4.3/
-```
+The flash tool is bundled in the repository at `libraries/ambpro2_sdk/tools/Pro2_PG_tool _v1.4.3/`
 
 <img src="docs/images/ameba-labels.png" width="35%">
 
