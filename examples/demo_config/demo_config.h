@@ -32,4 +32,9 @@
 /* Enable audio receive path. */
 #define MEDIA_PORT_ENABLE_AUDIO_RECV    ( 1 )
 
+/* Join Storage Session — controlled via CMake (-DJOIN_STORAGE_SESSION=ON). */
+#ifndef JOIN_STORAGE_SESSION
+    #define JOIN_STORAGE_SESSION        0
+#endif
+
 #endif /* DEMO_CONFIG_H */

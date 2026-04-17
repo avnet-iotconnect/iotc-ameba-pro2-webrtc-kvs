@@ -190,6 +190,20 @@ else()
      )
 endif()
 
+option( JOIN_STORAGE_SESSION "Enable KVS Join Storage Session for stream archival" OFF )
+
+if(JOIN_STORAGE_SESSION)
+     list(
+          APPEND app_flags
+          JOIN_STORAGE_SESSION=1
+     )
+else()
+     list(
+          APPEND app_flags
+          JOIN_STORAGE_SESSION=0
+     )
+endif()
+
 # ── Codec selection (set by iotc_config.sh — do not edit manually) ────────
 # Run: ./iotc_config.sh -codec h.264   (default, widest compatibility)
 # Run: ./iotc_config.sh -codec h.265   (lower bandwidth, requires H.265 viewer)
