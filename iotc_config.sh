@@ -1,5 +1,5 @@
 #!/bin/bash
-# iotc_config.sh — Configure IoTConnect device credentials and build options
+# iotc_config.sh — Configure IoTConnect device credentials
 #
 # Usage:
 #   1. Download your device config JSON from the IoTConnect portal.
@@ -7,14 +7,9 @@
 #      iotcDeviceConfig (N).json if you have downloaded it before).
 #   2. Download your device certificates zip from the IoTConnect portal
 #      and copy it into the repository root.
-#   3. Run: ./iotc_config.sh [-codec h.264|h.265]
-#
-# Flags:
-#   -codec h.264   Use H.264 video codec (default — widest compatibility)
-#   -codec h.265   Use H.265/HEVC video codec (lower bandwidth, ~462 Kbps vs ~1.4 Mbps)
+#   3. Run: ./iotc_config.sh
 #
 # The script will:
-#   - Set the video codec in project/webrtc_demo.cmake
 #   - Find the most recently downloaded iotcDeviceConfig*.json in ~/Downloads
 #   - Write CPID, ENV, and Device UID into iotconnect_config.h
 #   - Extract the certificate and private key from the certificates zip
@@ -22,34 +17,12 @@
 
 set -e
 
-# --- Parse arguments -------------------------------------------------------
-
-CODEC="h264"
-while [[ $# -gt 0 ]]; do
-    case "$1" in
-        -codec)
-            shift
-            case "${1,,}" in
-                h.264|h264) CODEC="h264" ;;
-                h.265|h265) CODEC="h265" ;;
-                *) echo "Error: unknown codec '$1'. Use h.264 or h.265."; exit 1 ;;
-            esac
-            ;;
-        *)
-            echo "Unknown argument: $1"
-            echo "Usage: $0 [-codec h.264|h.265]"
-            exit 1
-            ;;
-    esac
-    shift
-done
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_H="${SCRIPT_DIR}/project/realtek_amebapro2_webrtc_application/src/iotconnect/iotconnect_config.h"
 CERTS_C="${SCRIPT_DIR}/project/realtek_amebapro2_webrtc_application/src/iotconnect/iotconnect_certs.c"
 DOWNLOADS_DIR="${HOME}/Downloads"
 
-python3 - "$DOWNLOADS_DIR" "$SCRIPT_DIR" "$CONFIG_H" "$CERTS_C" "$CODEC" <<'PYEOF'
+python3 - "$DOWNLOADS_DIR" "$SCRIPT_DIR" "$CONFIG_H" "$CERTS_C" <<'PYEOF'
 import sys
 import os
 import re
@@ -57,30 +30,7 @@ import glob
 import json
 import zipfile
 
-downloads_dir, script_dir, config_h_path, certs_c_path, codec = sys.argv[1:]
-
-# ── 0. Apply codec selection in project/webrtc_demo.cmake ────────────────────
-
-cmake_path = os.path.join(script_dir, 'project', 'webrtc_demo.cmake')
-
-if not os.path.isfile(cmake_path):
-    sys.exit('Error: webrtc_demo.cmake not found: ' + cmake_path)
-
-with open(cmake_path, 'r') as f:
-    cmake_src = f.read()
-
-cmake_src, n = re.subn(
-    r'(set\(\s*IOTC_VIDEO_CODEC\s+")[^"]*(")',
-    r'\g<1>' + codec + r'\g<2>',
-    cmake_src
-)
-if n == 0:
-    sys.exit('Error: IOTC_VIDEO_CODEC setting not found in ' + cmake_path)
-
-with open(cmake_path, 'w') as f:
-    f.write(cmake_src)
-
-print('Video codec   : ' + ('H.265 (HEVC) — ~462 Kbps' if codec == 'h265' else 'H.264 — ~1.4 Mbps'))
+downloads_dir, script_dir, config_h_path, certs_c_path = sys.argv[1:]
 
 # ── 1. Find the most recently downloaded iotcDeviceConfig*.json ──────────────
 
