@@ -43,4 +43,4 @@
 [submodule "libraries/iotc-c-lib"]
 	path = libraries/iotc-c-lib
 	url = https://github.com/avnet-iotconnect/iotc-c-lib.git
-	branch = aws-creds-expiration-patch
+	branch = master

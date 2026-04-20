@@ -227,6 +227,8 @@ The flash tool is bundled in the repository at `libraries/ambpro2_sdk/tools/Pro2
 
 ### Flash the binary
 
+6. Run the flash command for your OS:
+
 **Linux:**
 ```sh
 cd "libraries/ambpro2_sdk/tools/Pro2_PG_tool _v1.4.3"
@@ -252,20 +254,20 @@ Replace `COMxx` with the COM port shown in Device Manager.
 
 ### Connect serial terminal
 
-Open a serial terminal at **115200 8N1** on the board's USB serial port:
+1. Open a serial terminal at **115200 8N1** on the board's USB serial port:
 
-**Linux / macOS:**
-```sh
-minicom -D /dev/ttyUSB0 -b 115200
-```
+   **Linux / macOS:**
+   ```sh
+   minicom -D /dev/ttyUSB0 -b 115200
+   ```
 
-**Windows:** Use [PuTTY](https://www.putty.org/). Select **Serial**, set the speed to `115200`, and set the serial line to the COM port shown in Device Manager (e.g. `COM3`). Leave all other settings at their defaults (8 data bits, no parity, 1 stop bit).
+   **Windows:** Use [PuTTY](https://www.putty.org/). Select **Serial**, set the speed to `115200`, and set the serial line to the COM port shown in Device Manager (e.g. `COM3`). Leave all other settings at their defaults (8 data bits, no parity, 1 stop bit).
 
-Press **Reset** to reboot the board and see log output.
+2. Press **Reset** to reboot the board and see log output.
 
 ### Set WiFi Credentials (first time only)
 
-While the board is at the console prompt, send:
+3. While the board is at the console prompt, send:
 ```
 ATW0=<your-ssid>
 ATW1=<your-password>
